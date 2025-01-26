@@ -23,7 +23,17 @@ const fs = require('fs');
 // })
 
 
-fs.rename('new.txt', 'Hello.txt', function(err){ // created file ko rename krny ka tariqa
+// fs.rename('new.txt', 'Hello.txt', function(err){ // created file ko rename krny ka tariqa
+//     if(err){
+//         console.log(err);
+        
+//     }else{
+//         console.log("Done");
+        
+//     }
+// })
+
+fs.copyFile('Hello.txt', 'copy.txt', function(err){ // created file ko copy krny ka tariqa
     if(err){
         console.log(err);
         
