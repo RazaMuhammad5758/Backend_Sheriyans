@@ -33,7 +33,7 @@ const fs = require('fs');
 //     }
 // })
 
-fs.copyFile('Hello.txt', 'copy.txt', function(err){ // created file ko copy krny ka tariqa
+fs.copyFile('Hello.txt', 'copy.txt', function(err){ // created file ko copy krny ka ariqa
     if(err){
         console.log(err);
         
