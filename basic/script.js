@@ -33,13 +33,17 @@ const fs = require('fs');
 //     }
 // })
 
-fs.copyFile('Hello.txt', 'copy.txt', function(err){ // created file ko copy krny ka tariqa
-    if(err){
-        console.log(err);
+// fs.copyFile('Hello.txt', 'copy.txt', function(err){ // created file ko copy krny ka tariqa
+//     if(err){
+//         console.log(err);
         
-    }else{
-        console.log("Done");
+//     }else{
+//         console.log("Done");
         
-    }
-})
+//     }
+// })
 
+fs.unlink('copy.txt', function(err){   // file delete krny ka tariqa
+    if(err) console.error(err);
+    else console.log("removed");
+})
