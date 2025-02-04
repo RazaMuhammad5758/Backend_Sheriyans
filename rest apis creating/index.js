@@ -11,7 +11,14 @@ app.use(express.urlencoded({extended: false}));
 
 app.use((req, res, next)=>{
     console.log("Hello from mSiddleware 1");
-    return res.json({msg: 'Hello from middleware 1'});
+    next();
+})
+
+
+// ye middleware log data save kregi ak file bna kr us me
+app.use((req, res, next)=>{
+    fs.appendFile("log.txt", `\n${Date.now()}: ${req.method}: ${req.path}`, (err, data)=>{
+    next();})
 })
 
 // api to get all users
