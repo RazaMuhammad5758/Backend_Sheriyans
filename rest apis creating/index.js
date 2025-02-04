@@ -1,13 +1,18 @@
 const express = require('express')
 const app = express()
 const users = require('./MOCK_DATA.json')
-PORT = 8000;
+PORT = 5000;
 const fs = require('fs')
 
 
 // Middleware
 
 app.use(express.urlencoded({extended: false}));
+
+app.use((req, res, next)=>{
+    console.log("Hello from mSiddleware 1");
+    return res.json({msg: 'Hello from middleware 1'});
+})
 
 // api to get all users
 app.get('/api/users', (req, res)=>{
