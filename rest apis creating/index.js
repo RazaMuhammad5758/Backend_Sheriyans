@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const users = require('./MOCK_DATA.json')
 PORT = 8000;
+const fs = require('fs')
 
 
 // Middleware
@@ -23,8 +24,11 @@ app.get('/api/users/:id', (req, res)=>{
 
 app.post('/api/users', (req, res)=>{
     const body = req.body
-    console.log('body', body);
-    return res.json({status: 'pending'})
+    users.push({...body, id: users.length+1})
+    fs.writeFile("./MOCK_DATA.json", JSON.stringify(users), (err, data)=>{
+        return res.json({status: 'success', id: users.length})
+
+    })
     
 })
 
