@@ -3,6 +3,32 @@ const app = express()
 const users = require('./MOCK_DATA.json')
 PORT = 5000;
 const fs = require('fs')
+const mongoose = require('mongoose');
+const { type } = require('os');
+
+
+// schema
+
+const userSchema = new mongoose.Schema({
+    firstName: {
+        type: String,
+        required: true,
+    },
+    lastName: {
+        type: String
+    },
+    email: {
+        type: string,
+        required: true,
+        unique: true,
+    },
+    jobTitle:{
+        type: string,
+    },
+    gender:{
+        type: string,
+    }
+})
 
 
 // Middleware
