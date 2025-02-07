@@ -1,10 +1,11 @@
 const express = require('express');
 const app = express()
-const users = require('./MOCK_DATA.json')
+// const users = require('./MOCK_DATA.json')
 PORT = 5000;
 const fs = require('fs')
 const mongoose = require('mongoose');
 const { type } = require('os');
+const { timeStamp } = require('console');
 
 // mongodb connection
 
@@ -32,8 +33,9 @@ const userSchema = new mongoose.Schema({
     },
     gender:{
         type: String,
-    }
-})
+    },
+    
+}, {timestamps: true})
 
 // model
 
@@ -55,16 +57,30 @@ app.use((req, res, next)=>{
 })
 
 // api to get all users
-app.get('/api/users', (req, res)=>{
-    return res.json(users)
+app.get('/api/users', async (req, res)=>{
+    const allDbUsers = await User.find({});
+    const html = `
+        <ul>
+            ${allDbUsers.map((user)=> `<li>${user.firstName} - ${user.email}</li>`).join("")}
+        </ul>`;
+        res.send(html);
 })
 
 
 // api to get user with specific id
-app.get('/api/users/:id', (req, res)=>{
-    const id = Number(req.params.id)
-    const user = users.find((user)=> user.id === id);
+app.get('/api/users/:id', async (req, res)=>{
+    const user = await User.findById(req.params.id);
+    if(!user) return res.status(404).json({ error: "User not found"})
     return res.json(user);
+})
+
+app.patch('/api/users/:id', async (req, res)=>{
+    await User.findByIdAndUpdate(req.params.id, {lastName: "Changed"})
+    return res.json({status: "success"})
+})
+app.delete('/api/users/:id', async (req, res)=>{
+    await User.findByIdAndDelete(req.params.id)
+    return res.json({status: "success"})
 })
 
 app.post('/api/users', async (req, res)=>{
