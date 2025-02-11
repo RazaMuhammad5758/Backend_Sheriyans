@@ -1,11 +1,6 @@
 const express = require('express');
 const app = express()
-// const users = require('./MOCK_DATA.json')
 PORT = 5000;
-const fs = require('fs')
-const mongoose = require('mongoose');
-const { type } = require('os');
-const { timeStamp } = require('console');
 const userRoutes = require("./routes/user");
 const {connecMongoDb} = require('./connection')
 const {logReqRes} = require('./middlewares')
@@ -19,7 +14,7 @@ connecMongoDb("mongodb://127.0.0.1:27017/youtube-app-1")
 app.use(express.urlencoded({extended: false}));
 
 app.use((req, res, next)=>{
-    console.log("Hello from mSiddleware 1");
+    console.log("Hello from middleware 1");
     next();
 })
 
@@ -29,7 +24,7 @@ app.use(logReqRes('log.txt'))
 
 // Routes
 
-app.use('/user', userRoutes)
+app.use('/api/users', userRoutes)
 
 app.listen(PORT, ()=>{
     console.log(`server started at ${PORT}`);

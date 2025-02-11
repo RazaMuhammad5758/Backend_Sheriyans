@@ -1,4 +1,4 @@
-const User = require("../routes/user")
+const User = require("../models/users")
 
 async function handleGetAllUsers(req, res){
     const AllDBUsers = await User.find({});
