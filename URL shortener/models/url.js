@@ -1,17 +1,11 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
-const UrlSchema = mongoose.Schema({
-    shortId:{
-        type: String,
-        required: true,
-        unique: true,
-    },
-    redirectUrl:{
-        type: String,
-        required: true,
-    },
-    visitHistory:[{ timestamp: {type: Number}}],
+const urlSchema = new mongoose.Schema({
+    shortId: { type: String, required: true, unique: true },
+    redirectUrl: { type: String, required: true },
+    visitedHistory: [{ timestamp: { type: Date, default: Date.now } }]
+}, {timestamps: true});
 
-}, {timestamps: true})
+const URL = mongoose.model("URL", urlSchema);  // ✅ Correct Model Export
 
-module.exports =  UrlSchema;
+module.exports = URL;  // ✅ Make sure this is correctly exported

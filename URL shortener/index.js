@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const PORT = 8001
+const PORT = 8002
 const urlRoute = require('./routes/url')
 const {connectToMongoDb} = require('./connectDB')
 
@@ -8,6 +8,8 @@ const {connectToMongoDb} = require('./connectDB')
 connectToMongoDb('mongodb://localhost:27017/short-url')
 .then(()=> console.log("mongodb conntected")
 )
+
+app.use(express.json())
 
 app.use('/url', urlRoute)
 
