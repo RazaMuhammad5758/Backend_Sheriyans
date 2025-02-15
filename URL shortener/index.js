@@ -21,7 +21,7 @@ app.get('/:shortId', async (req, res) => {
                 visitedHistory: { timestamp: Date.now() }  // ✅ Correct field name
             } 
         },
-        { new: true }  // ✅ Return the updated document
+        { new: true }  // ✅ Return the updated documen
     );
 
     if (!entry) {
