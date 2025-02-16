@@ -19,8 +19,8 @@ async function handleGetAnalytics(req, res) {
     const shortId = req.params.shortId;
     const result = await URL.findOne({shortId})
     return res.json({ 
-        totalClicks: req.visitedHistory.length,
-        analitics: req.visitedHistory
+        totalClicks: result.visitedHistory.length,
+        analitics: result.visitedHistory
 
     })
     
