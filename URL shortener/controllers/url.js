@@ -5,15 +5,19 @@ const URL = require('../models/url')
 async function handleGenerateNewShortURL(req, res) {
     const body = req.body
     if(!body.url)  return res.status(400).json({error: "URL is required"})
-    const shortID = shortid(8);
+    
+    const shortID = shortid.generate();  // shortid ko sahi tareeqay se use karein
     await URL.create({
         shortId: shortID,
         redirectUrl: body.url,
         visitedHistory: [],
-
     })
-    return res.json({ id: shortID})
+
+    // Redirect to the same page after URL is generated, passing the generated ID
+    return res.redirect('/url'); // or res.redirect('/url?id=' + shortID);
 }
+
+
 
 async function handleGetAnalytics(req, res) {
     const shortId = req.params.shortId;
@@ -27,7 +31,14 @@ async function handleGetAnalytics(req, res) {
     
 }
 
+async function handleDeleteURL(req, res) {
+    const shortId = req.params.shortId;
+    await URL.findOneAndDelete({ shortId });
+    res.redirect('/url');  // After deletion, redirect back to the list of URLs
+}
+
 module.exports = {
     handleGenerateNewShortURL,
-    handleGetAnalytics
+    handleGetAnalytics,
+    handleDeleteURL,
 }

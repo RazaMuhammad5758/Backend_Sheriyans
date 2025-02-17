@@ -11,6 +11,7 @@ connectToMongoDb('mongodb://localhost:27017/short-url')
     .then(() => console.log("MongoDB connected"));
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: false})) // middleware for form data
 app.use('/url', urlRoute);
 app.use('/', staticRoute)
 
