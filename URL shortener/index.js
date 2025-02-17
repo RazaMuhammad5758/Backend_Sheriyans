@@ -5,21 +5,20 @@ const urlRoute = require('./routes/url');
 const { connectToMongoDb } = require('./connectDB');
 const URL = require('./models/url');
 const path = require('path')
+const staticRoute = require('./routes/staticRouter')
 
 connectToMongoDb('mongodb://localhost:27017/short-url')
     .then(() => console.log("MongoDB connected"));
 
 app.use(express.json());
 app.use('/url', urlRoute);
+app.use('/', staticRoute)
 
 app.set("view engine", "ejs")
 app.set("views", path.resolve("./views"))
 
 
-app.get("/test", async(req, res)=>{
-    const allUsers = await URL.find({})
-    return res.render('home')
-})
+
 
 
 app.get('/:shortId', async (req, res) => {
