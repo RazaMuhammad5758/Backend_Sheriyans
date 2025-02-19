@@ -104,7 +104,7 @@
                 <% urls.forEach((url, index) => { %>
                     <tr>
                      <td><%= index + 1 %></td>
-                     <td><%= url.shortId %></td>
+                     <td> http://localhost:8002/<%= url.shortId %></td>
                      <td><a href="<%= url.redirectUrl %>" target="_blank"><%= url.redirectUrl %></a></td>
                      <td><%= url.visitedHistory.length %></td>
                      <td>
