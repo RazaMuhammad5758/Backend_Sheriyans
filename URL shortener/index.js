@@ -7,13 +7,16 @@ const URL = require('./models/url');
 const path = require('path')
 const staticRoute = require('./routes/staticRouter')
 const userRoute = require('./routes/user')
+const cookieParser = require('cookie-parser')
+const {restrictToUserLoggedIn} = require('./middlewares/auth')
 
 connectToMongoDb('mongodb://localhost:27017/short-url')
     .then(() => console.log("MongoDB connected"));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false})) // middleware for form data
-app.use('/url', urlRoute);
+app.use(cookieParser());
+app.use('/url', restrictToUserLoggedIn, urlRoute);
 app.use('/user', userRoute);
 app.use('/', staticRoute)
 
