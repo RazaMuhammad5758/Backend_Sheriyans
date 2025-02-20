@@ -6,6 +6,7 @@ const { connectToMongoDb } = require('./connectDB');
 const URL = require('./models/url');
 const path = require('path')
 const staticRoute = require('./routes/staticRouter')
+const userRoute = require('./routes/user')
 
 connectToMongoDb('mongodb://localhost:27017/short-url')
     .then(() => console.log("MongoDB connected"));
@@ -13,6 +14,7 @@ connectToMongoDb('mongodb://localhost:27017/short-url')
 app.use(express.json());
 app.use(express.urlencoded({ extended: false})) // middleware for form data
 app.use('/url', urlRoute);
+app.use('/user', userRoute);
 app.use('/', staticRoute)
 
 app.set("view engine", "ejs")
