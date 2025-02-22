@@ -1,16 +1,22 @@
 const express = require('express');
 const URL = require('../models/url');
 const router = express.Router();
+const { restrictToUserLoggedIn } = require('../middlewares/auth');
 
-router.get('/url', async(req, res)=>{
+router.get('/url', restrictToUserLoggedIn, async(req, res)=>{
+    if (!req.cookies?.uid) {
+        return res.redirect('/login'); // Agar user logged in nahi hai to login page par bhej do
+    }
+
     const allURLs = await URL.find({});
-    const generatedId = req.query.id; // Get the ID from query string
-    
-    res.render("home",{
+    const generatedId = req.query.id;
+
+    res.render("home", {
         urls: allURLs,
-        id: generatedId // Pass generated ID to the view
+        id: generatedId
     });
 });
+
 
 router.get("/signup", (req, res)=>{
     return res.render("signup")

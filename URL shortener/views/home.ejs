@@ -5,120 +5,219 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>URL Shortener</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            text-align: center;
+        * {
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            
         }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 100%;
+            background: #F8F9FD;
+            background: linear-gradient(0deg, rgb(255, 255, 255) 0%, rgb(244, 247, 251) 100%);
+            border-radius: 40px;
+            padding: 25px 35px;
+            border: 5px solid rgb(255, 255, 255);
+            box-shadow: rgba(133, 189, 215, 0.878) 0px 30px 30px -20px;
+            text-align: center;
+        }
+
         h1 {
-            color: #333;
+            font-weight: 900;
+            font-size: 30px;
+            color: rgb(16, 137, 211);
         }
+
+        p {
+            color: #555;
+            margin-top: 10px;
+        }
+
         form {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            display: inline-block;
-            margin-top: 20px;
+            margin: 20px 0;
         }
-        input[type="text"] {
-            width: 300px;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button {
-            background: #28a745;
-            color: white;
-            padding: 10px 20px;
+
+        .input {
+            width: 100%;
+            background: white;
             border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
+            padding: 15px 20px;
+            border-radius: 20px;
+            margin-top: 15px;
+            box-shadow: #cff0ff 0px 10px 10px -5px;
+            border-inline: 2px solid transparent;
         }
-        button:hover {
-            background: #218838;
+
+        .input::placeholder {
+            color: rgb(170, 170, 170);
         }
-        table {
-            width: 80%;
+
+        .input:focus {
+            outline: none;
+            border-inline: 2px solid #12B1D1;
+        }
+
+        .button {
+            display: block;
+            width: 100px;
+            font-weight: bold;
+            background: linear-gradient(45deg, rgb(16, 137, 211) 0%, rgb(18, 177, 209) 100%);
+            color: white;
+            padding-block: 15px;
             margin: 20px auto;
+            border-radius: 20px;
+            box-shadow: rgba(133, 189, 215, 0.878) 0px 20px 10px -15px;
+            border: none;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            transform: scale(1.03);
+            box-shadow: rgba(133, 189, 215, 0.878) 0px 23px 10px -20px;
+        }
+
+        .button:active {
+            transform: scale(0.95);
+            box-shadow: rgba(133, 189, 215, 0.878) 0px 15px 10px -10px;
+        }
+
+        .short-url {
+            margin-top: 20px;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
             border-collapse: collapse;
-            background: #fff;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
+            border-radius: 10px;
             overflow: hidden;
         }
+
         th, td {
-            padding: 12px;
-            border: 1px solid #ddd;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
         }
+
         th {
             background: #007bff;
             color: white;
         }
+
         tr:nth-child(even) {
-            background: #f9f9f9;
+            background: #f2f2f2;
         }
+
         .delete-button {
-            background-color: #dc3545;
+            background: #dc3545;
             color: white;
             border: none;
             padding: 5px 10px;
-            border-radius: 4px;
+            border-radius: 10px;
             cursor: pointer;
+            transition: all 0.2s ease-in-out;
         }
+
         .delete-button:hover {
-            background-color: #c82333;
+            background: #c82333;
+            transform: scale(1.05);
+        }
+
+        .delete-button:active {
+            transform: scale(0.95);
+        }
+
+        .logout {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            text-decoration: none;
+            color: #0099ff;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .logout:hover {
+            text-decoration: underline;
+        }
+        .data{
+            box-shadow: rgba(218, 220, 222, 0.878) 3px 10px 10px 1px;
         }
     </style>
 </head>
 <body>
-    <h1>URL Shortener</h1>
-    <% if (locals.id) { %>
-        <p>URL Generated: <a href="http://localhost:8002/<%= id %>" target="_blank">http://localhost:8002/url/<%= id %></a></p>
-    <% } %>
-    <div>
-        <form action="/url" method="POST">
-            <label> Enter your original URL</label><br>
-            <input type="text" name="url" placeholder="www.example.com" required>
-            <br>
-            <button type="submit">Generate</button>
-        </form>
-    </div>
-    <div>
-        <% if (locals.urls) { %>
-         <table>
-            <thead>
-                <tr>
-                    <th>S. No</th>
-                    <th>ShortId</th>
-                    <th>Redirect URL</th>
-                    <th>Clicks</th>
-                    <th>Action</th> <!-- New column for delete action -->
-                </tr>
-            </thead>
-            <tbody>
-                <% urls.forEach((url, index) => { %>
-                    <tr>
-                     <td><%= index + 1 %></td>
-                     <td>localhost:8002/<%= url.shortId %></td>
-                     <td><a href="<%= url.redirectUrl %>" target="_blank"><%= url.redirectUrl %></a></td>
-                     <td><%= url.visitedHistory.length %></td>
-                     <td>
-                         <form action="/url/delete/<%= url.shortId %>" method="GET">
-                             <button type="submit" class="delete-button">
-                                 Delete
-                             </button>
-                         </form>
-                     </td> <!-- Delete button in each row -->
-                    </tr>
-                <% }) %>
-            </tbody>
-         </table>
+    <div class="container">
+        <h1>Shorten Your URL</h1>
+        <p>Enter a long URL to shorten</p>
+
+        <% if (locals.id) { %>
+            <div class="short-url">
+                Shortened URL: 
+                <a href="http://localhost:8002/<%= id %>" target="_blank">
+                    http://localhost:8002/<%= id %>
+                </a>
+            </div>
         <% } %>
+
+        <form action="/url" method="POST">
+            <input class="input" type="text" name="url" placeholder="Enter your URL..." required>
+            <button class="button" type="submit">Shorten</button>
+        </form>
+
+        <a href="/user/logout" class="logout">Logout</a>
+    <div class="data">
+        <% if (locals.urls) { %>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Short URL</th>
+                        <th>Original URL</th>
+                        <th>Clicks</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% urls.forEach((url, index) => { %>
+                        <tr>
+                            <td><%= index + 1 %></td>
+                            <td>
+                                <a href="http://localhost:8002/<%= url.shortId %>" target="_blank">
+                                    localhost:8002/<%= url.shortId %>
+                                </a>
+                            </td>
+                            <td>
+                                <a href="<%= url.redirectUrl %>" target="_blank">
+                                    <%= url.redirectUrl %>
+                                </a>
+                            </td>
+                            <td><%= url.visitedHistory.length %></td>
+                            <td>
+                                <form action="/url/delete/<%= url.shortId %>" method="GET">
+                                    <button type="submit" class="delete-button">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        <% } %>
+    </div>
     </div>
 </body>
 </html>

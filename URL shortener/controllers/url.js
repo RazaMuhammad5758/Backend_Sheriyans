@@ -14,7 +14,8 @@ async function handleGenerateNewShortURL(req, res) {
     })
 
     // Redirect to the same page after URL is generated, passing the generated ID
-    return res.redirect('/url'); // or res.redirect('/url?id=' + shortID);
+    return res.redirect(`/url?id=${shortID}`);
+ // or res.redirect('/url?id=' + shortID);
 }
 
 

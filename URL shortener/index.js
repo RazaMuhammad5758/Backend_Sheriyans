@@ -24,28 +24,39 @@ app.set("view engine", "ejs")
 app.set("views", path.resolve("./views"))
 
 
+app.get('/', (req, res) => {
+    res.redirect('/url'); // ✅ Homepage `/url` pe le jaye
+});
 
 
 
 app.get('/:shortId', async (req, res) => {
     const shortId = req.params.shortId;
+    console.log("Requested shortId:", shortId);
 
     const entry = await URL.findOneAndUpdate(
-        { shortId },  // Find the document with this shortId
+        { shortId },  
         { 
-            $push: { 
-                visitedHistory: { timestamp: Date.now() }  // ✅ Correct field name
-            } 
+            $push: { visitedHistory: { timestamp: Date.now() } }
         },
-        { new: true }  // ✅ Return the updated documen
+        { new: true }  
     );
+
+    console.log("Database entry found:", entry);
 
     if (!entry) {
         return res.status(404).json({ error: "Short URL not found" });
     }
 
-    res.redirect(entry.redirectUrl);
+    // ✅ Ensure the URL starts with http:// or https://
+    let finalUrl = entry.redirectUrl;
+    if (!finalUrl.startsWith("http://") && !finalUrl.startsWith("https://")) {
+        finalUrl = "http://" + finalUrl;  // Default to HTTP if missing
+    }
+
+    res.redirect(finalUrl);
 });
+
 
 app.listen(PORT, () => {
     console.log(`Server started at PORT: ${PORT}`);
