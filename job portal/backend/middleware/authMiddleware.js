@@ -16,4 +16,35 @@ const protect = (req, res, next) => {
   }
 };
 
-module.exports = { protect };
+let blacklistedTokens = [];
+
+const authenticateUser = (req, res, next) => {
+  const token = req.header("Authorization")?.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "No token, authorization denied" });
+
+  if (blacklistedTokens.includes(token)) {
+    return res.status(401).json({ message: "Token is blacklisted" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+
+    console.log("Authenticated User:", req.user); // ✅ Debugging ke liye
+
+    next();
+  } catch (error) {
+    console.error("JWT Verification Error:", error); // ✅ Debugging ke liye
+    res.status(401).json({ message: "Invalid token" });
+  }
+};
+
+
+const logoutUser = (req, res) => {
+  const token = req.header("Authorization")?.split(" ")[1];
+  if (token) blacklistedTokens.push(token);
+  res.json({ message: "Logged out successfully" });
+};
+
+
+module.exports = { protect, logoutUser, authenticateUser};
