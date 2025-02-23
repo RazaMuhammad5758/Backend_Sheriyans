@@ -1,0 +1,9 @@
+Installed Packages:
+
+express → Server banane ke liye
+mongoose → MongoDB connect karne ke liye
+dotenv → Environment variables (.env file) use karne ke liye
+bcrypt → Password hashing ke liye
+jsonwebtoken → JWT authentication ke liye
+cors → Cross-Origin Resource Sharing enable karne ke liye
+nodemon → Development me auto-restart ke liye

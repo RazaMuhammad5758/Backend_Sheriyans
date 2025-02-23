@@ -1,18 +1,14 @@
-const express = require('express');
-const connectDB = require('./configuration/config');
-require('dotenv').config();
-console.log("MongoDB URI:", process.env.MONGO_URI); // Debugging ke liye
-
+require("dotenv").config();
+const express = require("express");
+const connectDB = require("./config/db");
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
-app.use(express.json()); 
+app.use(express.json());
 
-// Connect Database
 connectDB();
 
-app.get('/', (req, res) => {
-  res.send('Job Portal API Running');
-});
+app.use("/api/auth", authRoutes);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
