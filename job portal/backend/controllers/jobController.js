@@ -64,4 +64,23 @@ const getJobById = async (req, res) => {
   }
 };
 
-module.exports = { createJob, getJobs, updateJob, deleteJob, getJobById };
+
+const applyJob = async (req, res) => {
+  try {
+    const job = await Job.findById(req.params.id);
+    if (!job) return res.status(404).json({ message: "Job not found" });
+
+    if (job.applicants.includes(req.user.id)) {
+      return res.status(400).json({ message: "You have already applied for this job" });
+    }
+
+    job.applicants.push(req.user.id);
+    await job.save();
+
+    res.json({ message: "Applied successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+module.exports = { createJob, getJobs, updateJob, deleteJob, getJobById, applyJob };

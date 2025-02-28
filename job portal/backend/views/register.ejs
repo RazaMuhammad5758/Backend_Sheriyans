@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <%- include('layouts/header') %>
+
+    <main>
+        <h2>Register</h2>
+        <form id="registerForm">
+            <label>Name: <input type="text" name="name" id="name" required></label>
+            <label>Email: <input type="email" name="email" id="email" required></label>
+            <label>Password: <input type="password" name="password" id="password" required></label>
+            <label>Role: 
+                <select name="role" id="role">
+                    <option value="applicant">Applicant</option>
+                    <option value="recruiter">Recruiter</option>
+                </select>
+            </label>
+            <button type="submit">Register</button>
+        </form>
+    </main>
+
+    <%- include('layouts/footer') %>
+
+    <script>
+        document.getElementById("registerForm").addEventListener("submit", async function(event) {
+            event.preventDefault(); // Form reload hone se roko
+
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            const role = document.getElementById("role").value;
+
+            try {
+                const response = await fetch("/api/auth/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name, email, password, role })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert("User registered successfully! Redirecting to login...");
+                    window.location.href = "/login"; // ✅ Redirect to login
+                } else {
+                    alert("Error: " + data.message);
+                }
+            } catch (error) {
+                alert("Server error. Please try again.");
+            }
+        });
+    </script>
+</body>
+</html>

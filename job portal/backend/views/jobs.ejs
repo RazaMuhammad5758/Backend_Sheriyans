@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <%- include('layouts/header') %>
+
+    <main>
+        <h2>Available Jobs</h2>
+        <ul>
+            <% jobs.forEach(job => { %>
+                <li>
+                    <h3><%= job.title %> at <%= job.company %></h3>
+                    <p><%= job.description %></p>
+                    <p><strong>Location:</strong> <%= job.location %></p>
+                    <p><strong>Salary:</strong> $<%= job.salary %></p>
+                    <a href="/apply/<%= job._id %>">Apply Now</a>
+                </li>
+            <% }); %>
+        </ul>
+    </main>
+
+    <%- include('layouts/footer') %>
+</body>
+</html>
