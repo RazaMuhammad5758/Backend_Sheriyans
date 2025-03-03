@@ -22,31 +22,36 @@
 
     <script>
         document.getElementById("loginForm").addEventListener("submit", async function(event) {
-            event.preventDefault();
-    
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-    
-            try {
-                const response = await fetch("/api/auth/login", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email, password })
-                });
-    
-                const data = await response.json();
-    
-                if (response.ok) {
-                    alert("Login Successful!");
-                    localStorage.setItem("token", data.token); // ✅ Token store karo
-                    window.location.href = "/"; // ✅ Redirect to home page
-                } else {
-                    alert("Error: " + data.message);
-                }
-            } catch (error) {
-                alert("Server error. Please try again.");
-            }
+    event.preventDefault();
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    console.log("Login Request Data:", { email, password }); // ✅ Debugging ke liye
+
+    try {
+        const response = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
         });
+
+        const data = await response.json();
+
+        console.log("Server Response:", data); // ✅ Debugging ke liye
+
+        if (response.ok) {
+            alert("Login Successful!");
+            localStorage.setItem("token", data.token);
+            window.location.href = "/";
+        } else {
+            alert("Error: " + data.message);
+        }
+    } catch (error) {
+        alert("Server error. Please try again.");
+    }
+});
+
     </script>
 </body>
 </html>

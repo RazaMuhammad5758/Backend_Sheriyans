@@ -15,57 +15,42 @@ bcrypt.hash(plainTextPassword, saltRounds, function(err, hash) {
 });
 
 
-
 const registerUser = async (req, res) => {
-    try {
-        const { name, email, password, role } = req.body;
+  try {
+      const { name, email, password, role } = req.body;
 
-        // **Check if user already exists**
-        const userExists = await User.findOne({ email });
-        if (userExists) {
-            return res.status(400).json({ message: "User already exists" });
-        }
+      // ✅ Check if user already exists
+      const userExists = await User.findOne({ email });
+      if (userExists) return res.status(400).json({ message: "User already exists" });
 
-        // **Hash Password before saving**
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
+      // ✅ Create user with plain password (hashing model mein ho rahi hai)
+      const newUser = new User({ name, email, password, role });
+      await newUser.save();
 
-        const newUser = new User({
-            name,
-            email,
-            password: hashedPassword, // ✅ Correct Hashed Password
-            role
-        });
-
-        await newUser.save();
-        res.status(201).json({ message: "User registered successfully", user: newUser });
-    } catch (error) {
-        res.status(500).json({ message: "Server Error", error: error.message });
-    }
+      res.status(201).json({ message: "User registered successfully", user: newUser });
+  } catch (error) {
+      res.status(500).json({ message: "Server Error", error: error.message });
+  }
 };
 
+// ✅ Login User (Fixed)
 const loginUser = async (req, res) => {
   try {
       const { email, password } = req.body;
 
-      // **Step 1: Check If User Exists**
+      // ✅ Find User
       const user = await User.findOne({ email });
-      if (!user) {
-          console.log("User not found for email:", email);
-          return res.status(400).json({ message: "Invalid credentials" });
-      }
+      if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
       console.log("User found:", user);
 
-      // **Step 2: Compare Password**
+      // ✅ Compare Entered Password with Hashed Password
       const isMatch = await bcrypt.compare(password, user.password);
       console.log("Password match:", isMatch);
 
-      if (!isMatch) {
-          return res.status(400).json({ message: "Invalid credentials" });
-      }
+      if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
-      // **Step 3: Generate Token**
+      // ✅ Generate Token
       const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
       res.json({ message: "Login successful", token, user });
@@ -73,7 +58,6 @@ const loginUser = async (req, res) => {
       res.status(500).json({ message: "Server error", error: error.message });
   }
 };
-
 const updateProfile = async (req, res) => {
   try {
     const { name, email, role } = req.body;
