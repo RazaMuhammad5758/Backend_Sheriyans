@@ -33,7 +33,6 @@ const registerUser = async (req, res) => {
   }
 };
 
-// ✅ Login User (Fixed)
 const loginUser = async (req, res) => {
   try {
       const { email, password } = req.body;
@@ -42,22 +41,30 @@ const loginUser = async (req, res) => {
       const user = await User.findOne({ email });
       if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
-      console.log("User found:", user);
+      console.log("User found:", user); // Debugging ke liye
 
       // ✅ Compare Entered Password with Hashed Password
       const isMatch = await bcrypt.compare(password, user.password);
-      console.log("Password match:", isMatch);
+      console.log("Password match:", isMatch); // Debugging ke liye
 
       if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
-      // ✅ Generate Token
-      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+      // ✅ Generate Token (Check if JWT_SECRET is missing)
+      if (!process.env.JWT_SECRET) {
+          console.error("JWT_SECRET is missing!");
+          return res.status(500).json({ message: "Server Configuration Error" });
+      }
+
+      const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
       res.json({ message: "Login successful", token, user });
   } catch (error) {
+      console.error("Login Error:", error); // ✅ Print Full Error
       res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+
 const updateProfile = async (req, res) => {
   try {
     const { name, email, role } = req.body;

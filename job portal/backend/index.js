@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const path = require("path");
 require('dotenv').config();
+const jobRoutes = require("./routes/jobRoutes");
 
 
 dotenv.config();
@@ -34,6 +35,7 @@ app.get("/login", (req, res) => {
 app.get("/register", (req, res) => {
     res.render("register", { title: "register", user: null }); 
 });
+app.use("/jobs", jobRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

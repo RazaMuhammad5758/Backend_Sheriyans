@@ -46,5 +46,12 @@ const logoutUser = (req, res) => {
   res.json({ message: "Logged out successfully" });
 };
 
+const authorizeRecruiter = (req, res, next) => {
+  if (req.user.role !== "recruiter") {
+    return res.status(403).json({ message: "Access denied. Recruiters only." });
+  }
+  next();
+};
 
-module.exports = { protect, logoutUser, authenticateUser};
+
+module.exports = { protect, logoutUser, authenticateUser, authorizeRecruiter};

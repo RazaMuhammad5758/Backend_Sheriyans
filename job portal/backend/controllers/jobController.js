@@ -49,6 +49,10 @@ const deleteJob = async (req, res) => {
     const job = await Job.findByIdAndDelete(req.params.id);
     if (!job) return res.status(404).json({ message: "Job not found" });
     res.json({ message: "Job deleted successfully" });
+    if (job.postedBy.toString() !== req.user.id) {
+      return res.status(403).json({ message: "You can only delete jobs you posted" });
+  }
+  
   } catch (error) {
     res.status(500).json({ message: "Server Error" });
   }
@@ -64,23 +68,39 @@ const getJobById = async (req, res) => {
   }
 };
 
+const getAppliedJobs = async (req, res) => {
+  try {
+      const jobs = await Job.find({ applicants: req.user.id }).populate("postedBy", "name company");
+      res.json(jobs);
+  } catch (error) {
+      res.status(500).json({ message: "Server Error" });
+  }
+};
+
+
 
 const applyJob = async (req, res) => {
   try {
     const job = await Job.findById(req.params.id);
     if (!job) return res.status(404).json({ message: "Job not found" });
 
+    // ✅ Check if applicant already applied
     if (job.applicants.includes(req.user.id)) {
       return res.status(400).json({ message: "You have already applied for this job" });
     }
 
+    if (req.user.role !== "applicant") {
+      return res.status(403).json({ message: "Only applicants can apply for jobs" });
+  }
+  
     job.applicants.push(req.user.id);
     await job.save();
 
     res.json({ message: "Applied successfully" });
   } catch (error) {
+    console.error("Apply Job Error:", error);
     res.status(500).json({ message: "Server Error" });
   }
 };
 
-module.exports = { createJob, getJobs, updateJob, deleteJob, getJobById, applyJob };
+module.exports = { createJob, getJobs, updateJob, deleteJob, getJobById, applyJob, getAppliedJobs };

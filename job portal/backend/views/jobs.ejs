@@ -11,6 +11,11 @@
 
     <main>
         <h2>Available Jobs</h2>
+    
+        <% if (user && user.role === "recruiter") { %>
+            <a href="/jobs/post" class="btn">Post a Job</a>
+        <% } %>
+    
         <ul>
             <% jobs.forEach(job => { %>
                 <li>
@@ -18,12 +23,17 @@
                     <p><%= job.description %></p>
                     <p><strong>Location:</strong> <%= job.location %></p>
                     <p><strong>Salary:</strong> $<%= job.salary %></p>
-                    <a href="/apply/<%= job._id %>">Apply Now</a>
+    
+                    <% if (user && user.role === "applicant") { %>
+                        <form action="/jobs/<%= job._id %>/apply" method="POST">
+                            <button type="submit" class="btn">Apply Now</button>
+                        </form>
+                    <% } %>
                 </li>
             <% }); %>
         </ul>
     </main>
-
+    
     <%- include('layouts/footer') %>
 </body>
 </html>
