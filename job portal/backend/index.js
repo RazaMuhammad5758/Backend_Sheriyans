@@ -36,6 +36,15 @@ app.get("/register", (req, res) => {
     res.render("register", { title: "register", user: null }); 
 });
 app.use("/jobs", jobRoutes);
+app.get('/jobs', async (req, res) => {
+    try {
+        const jobs = await Job.find(); // Database se jobs fetch karna
+        res.json(jobs);
+    } catch (error) {
+        res.status(500).json({ message: "Server Error" });
+    }
+});
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
