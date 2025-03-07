@@ -1,63 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %></title>
-    <link rel="stylesheet" href="/public/css/styles.css">
-</head>
-<body>
-    <%- include('layouts/header') %>
+<%- include('layouts/header') %>
 
-    <main>
-        <h2 class="title">Available Jobs</h2>
-
-        <% if (user && user.role === "recruiter") { %>
-            <a href="/jobs/post" class="btn post-job">Post a Job</a>
+<main>
+    <h2>Available Jobs</h2>
+    <ul>
+        <% if (jobs.length > 0) { %>
+            <% jobs.forEach(job => { %>
+                <li>
+                    <h3><%= job.title %></h3>
+                    <p><%= job.description %></p>
+                    <p><strong>Company:</strong> <%= job.company %></p>
+                    <p><strong>Location:</strong> <%= job.location %></p>
+                    <button onclick="applyJob('<%= job._id %>')">Apply Now</button>
+                </li>
+            <% }) %>
+        <% } else { %>
+            <p>No jobs available at the moment.</p>
         <% } %>
+    </ul>
+</main>
 
-        <ul class="job-list" id="jobList">
-            <!-- Jobs dynamically yahan inject honge -->
-        </ul>
-    </main>
+<%- include('layouts/footer') %>
 
-    <%- include('layouts/footer') %>
-
-    <script>
-        async function fetchJobs() {
-            try {
-                const response = await fetch('/jobs'); // ✅ Jobs API Call
-                const jobs = await response.json(); // ✅ Data JSON me Convert
-
-                const jobList = document.getElementById('jobList');
-                jobList.innerHTML = ''; // Purana data remove karo
-
-                jobs.forEach(job => {
-                    const jobItem = document.createElement('li');
-                    jobItem.classList.add('job-card');
-
-                    jobItem.innerHTML = `
-                        <h3 class="job-title">${job.title} at ${job.company}</h3>
-                        <p class="job-description">${job.description}</p>
-                        <p><strong>Location:</strong> ${job.location}</p>
-                        <p><strong>Salary:</strong> $${job.salary}</p>
-
-                        ${job.role === "applicant" ? `
-                            <form action="/jobs/${job._id}/apply" method="POST">
-                                <button type="submit" class="btn apply-btn">Apply Now</button>
-                            </form>
-                        ` : ''}
-                    `;
-
-                    jobList.appendChild(jobItem);
-                });
-            } catch (error) {
-                console.error("Error fetching jobs:", error);
-            }
-        }
-
-        // 🔥 Page load hone pr API call karega
-        document.addEventListener('DOMContentLoaded', fetchJobs);
-    </script>
-</body>
-</html>
+<script>
+    function applyJob(jobId) {
+        alert("Redirecting to job application for: " + jobId);
+        window.location.href = "/jobs/apply/" + jobId; 
+    }
+</script>

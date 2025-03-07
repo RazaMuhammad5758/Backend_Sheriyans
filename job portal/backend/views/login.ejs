@@ -19,7 +19,6 @@
     </main>
 
     <%- include('layouts/footer') %>
-
     <script>
         document.getElementById("loginForm").addEventListener("submit", async function(event) {
     event.preventDefault();
@@ -35,27 +34,36 @@
         });
 
         const data = await response.json();
+        console.log("Server Response:", data); // ✅ Debugging
 
         if (response.ok) {
             alert("Login Successful!");
             localStorage.setItem("token", data.token);
-            localStorage.setItem("userRole", data.user.role); // ✅ Role Store in LocalStorage
+            localStorage.setItem("userRole", data.user.role);
 
-            // ✅ Role-based Redirect
+            //Debugging
+            console.log("Token:", localStorage.getItem("token"));
+            console.log("User Role:", localStorage.getItem("userRole"));
+
+            // ✅ Role-based Redirect Fix
             if (data.user.role === "recruiter") {
-                window.location.href = "/jobs/post";
+                console.log("Redirecting to post job...");
+                window.location.href = "/jobs/postJob";  // ✅ Ensure this matches the backend route
             } else {
+                console.log("Redirecting to jobs page...");
                 window.location.href = "/jobs";
             }
         } else {
             alert("Error: " + data.message);
         }
     } catch (error) {
+        console.error("Login Error:", error);
         alert("Server error. Please try again.");
     }
 });
 
-
     </script>
+    
+    
 </body>
 </html>

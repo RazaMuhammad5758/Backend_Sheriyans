@@ -4,6 +4,8 @@ const connectDB = require("./config/db");
 const path = require("path");
 require('dotenv').config();
 const jobRoutes = require("./routes/jobRoutes");
+const Job = require("./models/Job");
+
 
 
 dotenv.config();

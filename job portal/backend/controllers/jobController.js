@@ -25,11 +25,11 @@ const createJob = async (req, res) => {
 // Get All Jobs
 const getJobs = async (req, res) => {
   try {
-    const jobs = await Job.find();
-    res.json(jobs);
-  } catch (error) {
-    res.status(500).json({ message: "Server Error" });
-  }
+    const jobs = await Job.find(); // Assuming Job is your Mongoose model
+    res.render("jobs", { jobs }); // Sending jobs to jobs.ejs
+} catch (error) {
+    res.status(500).send("Server error");
+}
 };
 
 // Update Job

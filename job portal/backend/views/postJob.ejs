@@ -1,16 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post a Job</title>
-</head>
-<body>
-    <h2>Post a Job</h2>
-    <form action="/jobs" method="POST">
-        <label>Job Title: <input type="text" name="title" required></label>
-        <label>Description: <textarea name="description" required></textarea></label>
-        <button type="submit">Post Job</button>
-    </form>
-</body>
-</html>
+<form id="postJobForm">
+    <label>Job Title: <input type="text" id="title" required></label>
+    <label>Description: <textarea id="description" required></textarea></label>
+    <button type="submit">Post Job</button>
+</form>
+
+<script>
+document.getElementById("postJobForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const title = document.getElementById("title").value;
+    const description = document.getElementById("description").value;
+    const token = localStorage.getItem("token");
+
+    try {
+        const response = await fetch("/api/jobs/post", { // ✅ Ensure this matches backend route
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({ title, description })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert("Job posted successfully!");
+            window.location.href = "/jobs"; // ✅ Redirect to job listings
+        } else {
+            alert("Error: " + data.message);
+        }
+    } catch (error) {
+        alert("Server error. Please try again.");
+    }
+});
+</script>
