@@ -23,7 +23,10 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/auth", require("./routes/authRoutes"));
-app.use("/api/jobs", require("./routes/jobRoutes"));
+// app.use("/api/jobs", jobRoutes);
+// app.use("/api/jobs", jobRoutes); // For API calls
+app.use("/jobs", jobRoutes); // For rendering EJS views
+
 
 // Home Route
 app.get("/", (req, res) => {
@@ -37,15 +40,10 @@ app.get("/login", (req, res) => {
 app.get("/register", (req, res) => {
     res.render("register", { title: "register", user: null }); 
 });
-app.use("/jobs", jobRoutes);
-app.get('/jobs', async (req, res) => {
-    try {
-        const jobs = await Job.find(); // Database se jobs fetch karna
-        res.json(jobs);
-    } catch (error) {
-        res.status(500).json({ message: "Server Error" });
-    }
-});
+
+// job routes
+// app.use("/jobs", jobRoutes);
+
 
 
 const PORT = process.env.PORT || 5000;

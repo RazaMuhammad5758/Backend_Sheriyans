@@ -16,6 +16,7 @@ const router = express.Router();
 // ✅ Route to Post a Job (Only Recruiters Can Post)
 router.post("/post", authenticateUser, authorizeRecruiter, createJob);  
 
+// ✅ Job API Endpoints
 router.get("/", getJobs);  
 router.get("/:id", getJobById);  
 router.put("/:id", authenticateUser, authorizeRecruiter, updateJob);  
@@ -24,18 +25,14 @@ router.post("/:id/apply", authenticateUser, applyJob);
 router.get("/applied-jobs", authenticateUser, getAppliedJobs);
 
 // ✅ Render postJob.ejs page for Recruiters
-router.get("/jobs/postJob", (req, res) => {
-    console.log("🚀 Rendering postJob.ejs...");
+router.get("/jobs/postJob", authenticateUser, authorizeRecruiter, (req, res) => {
     try {
-        res.render("postJob", { message: "Hello from backend!" });
+        console.log("🚀 Recruiter Accessing postJob.ejs...");
+        res.render("postJob");
     } catch (error) {
         console.error("❌ Error Rendering postJob.ejs:", error);
-        res.status(500).send("EJS Rendering Error");
+        res.status(500).render("error", { message: "Failed to load Post Job page" }); // ✅ Fix
     }
 });
-
-
-
-
 
 module.exports = router;
