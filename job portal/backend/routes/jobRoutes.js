@@ -24,7 +24,7 @@ router.post("/:id/apply", authenticateUser, applyJob);
 router.get("/applied-jobs", authenticateUser, getAppliedJobs);
 
 // ✅ Render postJob.ejs page for Recruiters
-router.get("/postJob", (req, res) => {
+router.get("/jobs/postJob", (req, res) => {
     console.log("🚀 Rendering postJob.ejs...");
     try {
         res.render("postJob", { message: "Hello from backend!" });
