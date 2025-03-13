@@ -24,7 +24,7 @@ router.delete("/:id", authenticateUser, authorizeRecruiter, deleteJob);
 router.post("/:id/apply", authenticateUser, applyJob);  
 router.get("/applied-jobs", authenticateUser, getAppliedJobs);
 
-// // ✅ Render postJob.ejs page for Recruiters
+// // ✅ Render postJob.ejs page for Recruiter
 router.get("/postjob", authenticateUser, authorizeRecruiter, (req, res) => {
     try {
         console.log("🚀 Recruiter Accessing postJob.ejs...");
@@ -35,5 +35,6 @@ router.get("/postjob", authenticateUser, authorizeRecruiter, (req, res) => {
     }
 });
 
+  
 
 module.exports = router;
