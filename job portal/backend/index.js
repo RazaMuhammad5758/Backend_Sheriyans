@@ -25,7 +25,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/api/auth", require("./routes/authRoutes"));
 // app.use("/api/jobs", jobRoutes);
 // app.use("/api/jobs", jobRoutes); // For API calls
-app.use("/jobs", jobRoutes); // For rendering EJS views
+// app.use("/jobs", jobRoutes); // For rendering EJS views
 
 
 // Home Route

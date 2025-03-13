@@ -45,17 +45,21 @@ const logoutUser = (req, res) => {
 };
 
 const authorizeRecruiter = (req, res, next) => {
+  console.log("Checking User in Request:", req.user); // ✅ Debugging
   if (!req.user) {
+      console.log("❌ No user found in request!");
       return res.status(401).json({ message: "Unauthorized - No User Found" });
   }
 
   if (req.user.role !== "recruiter") {
+      console.log("❌ User is not a recruiter:", req.user.role);
       return res.status(403).json({ message: "Access denied! Recruiters only." });
   }
 
-  console.log("Recruiter verified:", req.user.role); // ✅ Debugging
+  console.log("✅ Recruiter verified:", req.user.role);
   next();
 };
+
 
 
 
