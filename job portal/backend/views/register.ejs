@@ -11,10 +11,19 @@
 
     <main>
         <h2>Register</h2>
+
+        <!-- ✅ Error Message Placeholder -->
+        <p id="error-message" style="color: red; display: none;"></p>
+
         <form id="registerForm">
             <label>Name: <input type="text" name="name" id="name" required></label>
             <label>Email: <input type="email" name="email" id="email" required></label>
-            <label>Password: <input type="password" name="password" id="password" required></label>
+            
+            <label>Password: 
+                <input type="password" name="password" id="password" required>
+                <input type="checkbox" id="showPassword"> Show Password
+            </label>
+
             <label>Role: 
                 <select name="role" id="role">
                     <option value="applicant">Applicant</option>
@@ -29,12 +38,20 @@
 
     <script>
         document.getElementById("registerForm").addEventListener("submit", async function(event) {
-            event.preventDefault(); // Form reload hone se roko
+            event.preventDefault(); // ✅ Form reload hone se roko
 
-            const name = document.getElementById("name").value;
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
+            const name = document.getElementById("name").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
             const role = document.getElementById("role").value;
+            const errorMessage = document.getElementById("error-message");
+
+            // ✅ Simple Frontend Validation
+            if (!name || !email || !password) {
+                errorMessage.textContent = "All fields are required!";
+                errorMessage.style.display = "block";
+                return;
+            }
 
             try {
                 const response = await fetch("/api/auth/register", {
@@ -49,11 +66,19 @@
                     alert("User registered successfully! Redirecting to login...");
                     window.location.href = "/login"; // ✅ Redirect to login
                 } else {
-                    alert("Error: " + data.message);
+                    errorMessage.textContent = data.message || "Registration failed!";
+                    errorMessage.style.display = "block";
                 }
             } catch (error) {
-                alert("Server error. Please try again.");
+                errorMessage.textContent = "Server error. Please try again.";
+                errorMessage.style.display = "block";
             }
+        });
+
+        // ✅ Password Show/Hide Feature
+        document.getElementById("showPassword").addEventListener("change", function() {
+            const passwordField = document.getElementById("password");
+            passwordField.type = this.checked ? "text" : "password";
         });
     </script>
 </body>

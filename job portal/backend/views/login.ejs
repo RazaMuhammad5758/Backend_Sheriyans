@@ -11,59 +11,82 @@
 
     <main>
         <h2>Login</h2>
+
+        <!-- ✅ Error Message Placeholder -->
+        <p id="error-message" style="color: red; display: none;"></p>
+
         <form id="loginForm">
             <label>Email: <input type="email" id="email" required></label>
-            <label>Password: <input type="password" id="password" required></label>
+            <label>Password: 
+                <input type="password" id="password" required>
+                <input type="checkbox" id="showPassword"> Show Password
+            </label>
             <button type="submit">Login</button>
         </form>
     </main>
 
     <%- include('layouts/footer') %>
+
     <script>
         document.getElementById("loginForm").addEventListener("submit", async function(event) {
-    event.preventDefault();
+            event.preventDefault();
 
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const errorMessage = document.getElementById("error-message");
 
-    try {
-        const response = await fetch("/api/auth/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password })
+            // ✅ Simple Frontend Validation
+            if (!email || !password) {
+                errorMessage.textContent = "Both fields are required!";
+                errorMessage.style.display = "block";
+                return;
+            }
+
+            try {
+                const response = await fetch("/api/auth/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                console.log("Server Response:", data); // ✅ Debugging
+
+                if (response.ok) {
+                    alert("Login Successful!");
+
+                    localStorage.setItem("token", data.token);
+                    localStorage.setItem("userRole", data.user.role);
+
+                    console.log("🔑 Token Saved:", localStorage.getItem("token")); // ✅ Debugging
+                    console.log("👤 User Role Saved:", localStorage.getItem("userRole"));
+
+
+                    // ✅ Correct Role-based Redirect Fix
+                    if (data.user.role === "recruiter") {
+                        console.log("Redirecting to post job...");
+                        window.location.href = "/jobs/postjob";  // ✅ Fix
+                    } else {
+                        console.log("Redirecting to jobs page...");
+                        window.location.href = "/jobs";
+                    }
+
+                } else {
+                    errorMessage.textContent = data.message || "Login failed!";
+                    errorMessage.style.display = "block";
+                }
+            } catch (error) {
+                console.error("Login Error:", error);
+                errorMessage.textContent = "Server error. Please try again.";
+                errorMessage.style.display = "block";
+            }
         });
 
-        const data = await response.json();
-        console.log("Server Response:", data); // ✅ Debugging
-
-        if (response.ok) {
-            alert("Login Successful!");
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("userRole", data.user.role);
-
-            //Debugging
-            console.log("Token:", localStorage.getItem("token"));
-            console.log("User Role:", localStorage.getItem("userRole"));
-
-            // ✅ Role-based Redirect Fix
-            if (data.user.role === "recruiter") {
-                console.log("Redirecting to post job...");
-                window.location.href = "/postjob";
-            } else {
-                console.log("Redirecting to jobs page...");
-                window.location.href = "/jobs";
-            }
-        } else {
-            alert("Error: " + data.message);
-        }
-    } catch (error) {
-        console.error("Login Error:", error);
-        alert("Server error. Please try again.");
-    }
-});
-
+        // ✅ Password Show/Hide Feature
+        document.getElementById("showPassword").addEventListener("change", function() {
+            const passwordField = document.getElementById("password");
+            passwordField.type = this.checked ? "text" : "password";
+        });
     </script>
-    
-    
 </body>
 </html>
