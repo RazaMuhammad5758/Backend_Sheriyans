@@ -3,17 +3,6 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt"); // Ensure bcrypt is imported
 
 
-const plainTextPassword = "abc";
-const saltRounds = 10;
-
-bcrypt.hash(plainTextPassword, saltRounds, function(err, hash) {
-    if (err) {
-        console.error("Hashing error:", err);
-    } else {
-        console.log("Generated Hash:", hash);
-    }
-});
-
 
 const registerUser = async (req, res) => {
   try {

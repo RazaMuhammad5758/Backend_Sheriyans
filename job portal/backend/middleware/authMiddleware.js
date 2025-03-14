@@ -1,66 +1,73 @@
 const jwt = require("jsonwebtoken");
 
-const protect = (req, res, next) => {
+let blacklistedTokens = new Map();
+
+// ✅ Unified Authentication Middleware (Protect + Authenticate)
+const authenticateUser = (req, res, next) => {
+  const token =
+    req.header("Authorization")?.replace("Bearer ", "") || req.cookies?.token;
+
+  console.log("🔑 Token Received:", token); // ✅ Debugging
+
+  if (!token) {
+    console.log("❌ No Token Provided");
+    return res.status(401).json({ message: "Unauthorized - No Token Provided" });
+  }
+
+  if (blacklistedTokens.has(token)) {
+    console.log("🚫 Token is Blacklisted");
+    return res.status(401).json({ message: "Unauthorized - Token is Blacklisted" });
+  }
+
   try {
-    const token = req.header("Authorization")?.split(" ")[1]; // Bearer token
-
-    if (!token) {
-      return res.status(401).json({ message: "Unauthorized, No Token" });
-    }
-
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("✅ Token Decoded:", decoded); // ✅ Debugging
+
     req.user = decoded;
     next();
   } catch (error) {
-    return res.status(401).json({ message: "Unauthorized, Invalid Token" });
-  }
-};
-
-let blacklistedTokens = [];
-
-const authenticateUser = (req, res, next) => {
-  const token = req.header("Authorization")?.replace("Bearer ", "") || req.cookies.token;
-  
-  if (!token) {
-      return res.status(401).json({ message: "Unauthorized - No Token Provided" });
-  }
-
-  try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = decoded;  // ✅ `req.user` set karo
-      console.log("User authenticated:", req.user); // ✅ Debugging
-      next();
-  } catch (error) {
-      console.error("Authentication error:", error);
-      return res.status(401).json({ message: "Invalid Token" });
+    console.error("❌ Invalid Token Error:", error);
+    return res.status(401).json({ message: "Invalid Token" });
   }
 };
 
 
-
+// ✅ Logout User (Blacklist Token)
 const logoutUser = (req, res) => {
   const token = req.header("Authorization")?.split(" ")[1];
-  if (token) blacklistedTokens.push(token);
+  if (token) {
+    const expiryTime = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days expiry
+    blacklistedTokens.set(token, expiryTime);
+  }
   res.json({ message: "Logged out successfully" });
 };
 
+// ✅ Automatic Cleanup for Expired Tokens
+setInterval(() => {
+  const now = Date.now();
+  blacklistedTokens.forEach((expiry, token) => {
+    if (expiry < now) {
+      blacklistedTokens.delete(token);
+    }
+  });
+}, 60 * 60 * 1000); // Runs every 1 hour
+
+// ✅ Only Recruiters Can Access
 const authorizeRecruiter = (req, res, next) => {
-  console.log("Checking User in Request:", req.user); // ✅ Debugging
   if (!req.user) {
-      console.log("❌ No user found in request!");
-      return res.status(401).json({ message: "Unauthorized - No User Found" });
+    console.log("❌ No User Found in Request");
+    return res.status(401).json({ message: "Unauthorized - No User Found" });
   }
+
+  console.log("👤 User Role:", req.user.role); // ✅ Debugging
 
   if (req.user.role !== "recruiter") {
-      console.log("❌ User is not a recruiter:", req.user.role);
-      return res.status(403).json({ message: "Access denied! Recruiters only." });
+    console.log("🚫 Access Denied! Not a Recruiter");
+    return res.status(403).json({ message: "Access denied! Recruiters only." });
   }
 
-  console.log("✅ Recruiter verified:", req.user.role);
+  console.log("✅ Access Granted to Recruiter");
   next();
 };
 
-
-
-
-module.exports = { protect, logoutUser, authenticateUser, authorizeRecruiter};
+module.exports = { authenticateUser, logoutUser, authorizeRecruiter };

@@ -7,6 +7,9 @@ const createJob = async (req, res) => {
 
     console.log("Request Body:", req.body);  // ✅ Debugging Line
 
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: "Unauthorized request" });
+    }  
     const job = new Job({ title, description, salary, location, company, postedBy: req.user.id });
     await job.save();
 
@@ -25,12 +28,18 @@ const createJob = async (req, res) => {
 // Get All Jobs
 const getJobs = async (req, res) => {
   try {
-    const jobs = await Job.find(); // Assuming Job is your Mongoose model
-    res.render("jobs", { jobs }); // Sending jobs to jobs.ejs
-} catch (error) {
-    res.status(500).send("Server error");
-}
+    const jobs = await Job.find();
+    
+    if (req.headers.accept && req.headers.accept.includes("application/json")) {
+      return res.json(jobs);
+    }
+
+    res.render("jobs", { jobs }); // EJS ke liye
+  } catch (error) {
+    res.status(500).json({ message: "Server Error" });
+  }
 };
+
 
 // Update Job
 const updateJob = async (req, res) => {
@@ -46,17 +55,20 @@ const updateJob = async (req, res) => {
 // Delete Job
 const deleteJob = async (req, res) => {
   try {
-    const job = await Job.findByIdAndDelete(req.params.id);
+    const job = await Job.findById(req.params.id);
     if (!job) return res.status(404).json({ message: "Job not found" });
-    res.json({ message: "Job deleted successfully" });
+
     if (job.postedBy.toString() !== req.user.id) {
       return res.status(403).json({ message: "You can only delete jobs you posted" });
-  }
-  
+    }
+
+    await job.deleteOne();
+    res.json({ message: "Job deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
 
 const getJobById = async (req, res) => {
   try {
@@ -80,8 +92,15 @@ const getAppliedJobs = async (req, res) => {
 
 
 const applyJob = async (req, res) => {
+  if (!req.user || !req.user.id) {
+    return res.status(401).json({ message: "Unauthorized request" });
+}
+
   try {
-    const job = await Job.findById(req.params.id);
+    const jobs = await Job.find({ applicants: req.user.id })
+                      .populate("postedBy", "name company")
+                      .populate("applicants", "name email");
+
     if (!job) return res.status(404).json({ message: "Job not found" });
 
     // ✅ Check if applicant already applied
