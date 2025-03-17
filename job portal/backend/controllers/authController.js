@@ -8,11 +8,11 @@ const registerUser = async (req, res) => {
   try {
       const { name, email, password, role } = req.body;
 
-      // ✅ Check if user already exists
+      // Check if user already exists
       const userExists = await User.findOne({ email });
       if (userExists) return res.status(400).json({ message: "User already exists" });
 
-      // ✅ Create user with plain password (hashing model mein ho rahi hai)
+      // Create user with plain password (hashing model mein ho rahi hai)
       const newUser = new User({ name, email, password, role });
       await newUser.save();
 
@@ -32,13 +32,13 @@ const loginUser = async (req, res) => {
 
       console.log("User found:", user); // Debugging ke liye
 
-      // ✅ Compare Entered Password with Hashed Password
+      //  Compare Entered Password with Hashed Password
       const isMatch = await bcrypt.compare(password, user.password);
       console.log("Password match:", isMatch); // Debugging ke liye
 
       if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
-      // ✅ Generate Token (Check if JWT_SECRET is missing)
+      //  Generate Token (Check if JWT_SECRET is missing)
       if (!process.env.JWT_SECRET) {
           console.error("JWT_SECRET is missing!");
           return res.status(500).json({ message: "Server Configuration Error" });
@@ -46,9 +46,18 @@ const loginUser = async (req, res) => {
 
       const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
-      res.json({ message: "Login successful", token, user });
+      //  Send Redirect URL Based on Role
+      const redirectURL = user.role === "recruiter" ? "/jobs/postjob" : "/jobs";
+
+      res.json({ 
+          message: "Login successful", 
+          token, 
+          user, 
+          redirectURL //  Redirect URL sent in response
+      });
+
   } catch (error) {
-      console.error("Login Error:", error); // ✅ Print Full Error
+      console.error("Login Error:", error); //  Print Full Error
       res.status(500).json({ message: "Server error", error: error.message });
   }
 };
