@@ -4,16 +4,15 @@ const router = express.Router();
 const { restrictToUserLoggedIn } = require('../middlewares/auth');
 
 router.get('/url', restrictToUserLoggedIn, async(req, res)=>{
-    if (!req.cookies?.uid) {
+    if (!req.user) 
         return res.redirect('/login'); // Agar user logged in nahi hai to login page par bhej do
-    }
+    
 
-    const allURLs = await URL.find({});
-    const generatedId = req.query.id;
+    const allURLs = await URL.find({createdBy: req.user._id});
 
-    res.render("home", {
+    return    res.render("home", {
         urls: allURLs,
-        id: generatedId
+    
     });
 });
 

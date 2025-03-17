@@ -1,7 +1,42 @@
 <%- include('layouts/header') %>
 
+<style>
+    /* General Styling */
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h2 { color: #333; align-items: center; justify-content: center; text-align: center; }
+
+    /* Job List Styling */
+    ul { list-style-type: none; padding: 0; }
+    li { padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; background: #f9f9f9; }
+    button {
+        background: #007bff; color: white; padding: 8px 12px; border: none; cursor: pointer; 
+        border-radius: 5px; transition: 0.3s; font-size: 14px;
+    }
+    button:hover { background: #0056b3; }
+
+    /* Modal Styling */
+    .modal {
+        display: none; position: fixed; z-index: 10; left: 0; top: 0; width: 100%; height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center;
+    }
+    .modal-content {
+        background: white; padding: 20px; width: 90%; max-width: 400px; border-radius: 8px; 
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); position: relative;
+    }
+    .close {
+        position: absolute; right: 15px; top: 10px; font-size: 20px; cursor: pointer; color: #333;
+    }
+    .close:hover { color: red; }
+
+    /* Form Inputs */
+    input, textarea {
+        width: 100%; padding: 8px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px;
+    }
+</style>
+
 <main>
     <h2>Available Jobs</h2>
+    <button onclick="showAppliedJobs()">View Applied Jobs</button>
     <ul>
         <% if (jobs.length > 0) { %>
             <% jobs.forEach(job => { %>
@@ -10,7 +45,7 @@
                     <p><%= job.description %></p>
                     <p><strong>Company:</strong> <%= job.company %></p>
                     <p><strong>Location:</strong> <%= job.location %></p>
-                    <button onclick="applyJob('<%= job._id %>')">Apply Now</button>
+                    <button onclick="openModal('<%= job._id %>', '<%= job.title %>', '<%= job.description %>', '<%= job.company %>', '<%= job.location %>')">Apply Now</button>
                 </li>
             <% }) %>
         <% } else { %>
@@ -19,11 +54,99 @@
     </ul>
 </main>
 
+<!-- Apply Job Modal -->
+<div id="applyModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Apply for Job</h2>
+        <form id="applyForm">
+            <input type="hidden" id="jobId">
+            <label for="name">Full Name:</label>
+            <input type="text" id="name" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" required>
+
+            <label for="resume">Resume (Link or Summary):</label>
+            <textarea id="resume" rows="3" required></textarea>
+
+            <button type="submit">Submit Application</button>
+        </form>
+    </div>
+</div>
+
+<!-- Applied Jobs Modal -->
+<div id="appliedJobsModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeAppliedJobs()">&times;</span>
+        <h2>Applied Jobs</h2>
+        <ul id="appliedJobsList"></ul>
+    </div>
+</div>
+
 <%- include('layouts/footer') %>
 
 <script>
-    function applyJob(jobId) {
-        alert("Redirecting to job application for: " + jobId);
-        window.location.href = "/jobs/apply/" + jobId; 
+    let appliedJobs = JSON.parse(localStorage.getItem("appliedJobs")) || [];
+
+    function openModal(jobId, title, description, company, location) {
+        document.getElementById("applyModal").style.display = "flex";
+        document.getElementById("jobId").value = jobId;
+        document.getElementById("applyModal").dataset.jobDetails = JSON.stringify({ jobId, title, description, company, location });
     }
+
+    function closeModal() {
+        document.getElementById("applyModal").style.display = "none";
+    }
+
+    function showAppliedJobs() {
+        document.getElementById("appliedJobsModal").style.display = "flex";
+        let appliedList = document.getElementById("appliedJobsList");
+        appliedList.innerHTML = appliedJobs.length > 0 
+            ? appliedJobs.map(job => `
+                <li>
+                    <h3>${job.title}</h3>
+                    <p>${job.description}</p>
+                    <p><strong>Company:</strong> ${job.company}</p>
+                    <p><strong>Location:</strong> ${job.location}</p>
+                </li>`).join('')
+            : "<p>No applications yet.</p>";
+    }
+
+    function closeAppliedJobs() {
+        document.getElementById("appliedJobsModal").style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target.classList.contains("modal")) {
+            event.target.style.display = "none";
+        }
+    };
+
+    document.getElementById("applyForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const jobDetails = JSON.parse(document.getElementById("applyModal").dataset.jobDetails);
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const resume = document.getElementById("resume").value;
+
+        fetch("/jobs/apply", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ jobId: jobDetails.jobId, name, email, resume })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Application submitted successfully!");
+                appliedJobs.push(jobDetails);
+                localStorage.setItem("appliedJobs", JSON.stringify(appliedJobs));
+                closeModal();
+            } else {
+                alert("Error submitting application: " + data.error);
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    });
 </script>

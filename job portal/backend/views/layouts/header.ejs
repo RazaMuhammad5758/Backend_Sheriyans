@@ -1,9 +1,49 @@
-<header>
-    <h1><a href="/">Job Portal</a></h1>
-    <nav>
-        <a href="/login">Login</a> |
-        <a href="/register">Register</a> |
-        <a href="/jobs">All Jobs</a>
-        <a href="/postjob">postjob Jobs</a>
-    </nav>
-</header>
+<head>
+    <style>
+        header {
+            background: linear-gradient(to right, #4CAF50, #2E8B57); /* Green gradient */
+            padding: 0px 2px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 a {
+            color: white;
+            text-decoration: none;
+            font-size: 26px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        nav {
+            display: flex;
+            gap: 15px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 5px 10px;
+            transition: 0.3s ease-in-out;
+            border-radius: 5px;
+        }
+
+        nav a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="/">Job Portal</a></h1>
+        <nav>
+            <a href="/login">Login</a> |
+            <a href="/register">Register</a> |
+        </nav>
+    </header>
+</body>

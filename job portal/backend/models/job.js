@@ -13,4 +13,8 @@ const jobSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Job", jobSchema);
+//  Ensure Model is Not Re-Declared
+const Job = mongoose.models.Job || mongoose.model("Job", jobSchema);
+
+module.exports = Job;
+

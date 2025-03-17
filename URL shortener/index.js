@@ -8,7 +8,7 @@ const path = require('path')
 const staticRoute = require('./routes/staticRouter')
 const userRoute = require('./routes/user')
 const cookieParser = require('cookie-parser')
-const {restrictToUserLoggedIn} = require('./middlewares/auth')
+const {restrictToUserLoggedIn, checkAuth} = require('./middlewares/auth')
 
 connectToMongoDb('mongodb://localhost:27017/short-url')
     .then(() => console.log("MongoDB connected"));
@@ -17,8 +17,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false})) // middleware for form data
 app.use(cookieParser());
 app.use('/url', restrictToUserLoggedIn, urlRoute);
-app.use('/user', userRoute);
-app.use('/', staticRoute)
+app.use('/user',  userRoute);
+app.use('/', checkAuth, staticRoute)
 
 app.set("view engine", "ejs")
 app.set("views", path.resolve("./views"))

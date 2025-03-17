@@ -5,7 +5,7 @@ const createJob = async (req, res) => {
   try {
     const { title, description, salary, location, company } = req.body;
 
-    console.log("Request Body:", req.body);  // ✅ Debugging Line
+    console.log("Request Body:", req.body);  //  Debugging Line
 
     if (!req.user || !req.user.id) {
       return res.status(401).json({ message: "Unauthorized request" });
@@ -13,20 +13,21 @@ const createJob = async (req, res) => {
     const job = new Job({ title, description, salary, location, company, postedBy: req.user.id });
     await job.save();
 
-    console.log("Job Created Successfully:", job);  // ✅ Debugging Line
+    console.log("Job Created Successfully:", job);  //  Debugging Line
 
     res.status(201).json({ message: "Job created successfully", job });
   } catch (error) {
-    console.error("Create Job Error:", error.message);  // ✅ Error message extract kar raha hai
-    console.error("Full Error:", error);  // ✅ Poora error print hoga
+    console.error("Create Job Error:", error.message);  //  Error message extract kar raha hai
+    console.error("Full Error:", error);  //  Poora error print hoga
 
-    res.status(500).json({ message: "Server Error", error: error.message });  // ✅ Error response me bhejo
+    res.status(500).json({ message: "Server Error from create job", error: error.message });  //  Error response me bhejo
   }
 };
 
 
 // Get All Jobs
 const getJobs = async (req, res) => {
+  console.log("hello from getJobs")
   try {
     const jobs = await Job.find();
     
@@ -36,7 +37,7 @@ const getJobs = async (req, res) => {
 
     res.render("jobs", { jobs }); // EJS ke liye
   } catch (error) {
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: "Server Error from getJobs" });
   }
 };
 
@@ -48,7 +49,7 @@ const updateJob = async (req, res) => {
     if (!job) return res.status(404).json({ message: "Job not found" });
     res.json({ message: "Job updated successfully", job });
   } catch (error) {
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: "Server Error from updateJobs" });
   }
 };
 
@@ -65,7 +66,7 @@ const deleteJob = async (req, res) => {
     await job.deleteOne();
     res.json({ message: "Job deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: "Server Error from deletejob" });
   }
 };
 
@@ -85,7 +86,7 @@ const getAppliedJobs = async (req, res) => {
       const jobs = await Job.find({ applicants: req.user.id }).populate("postedBy", "name company");
       res.json(jobs);
   } catch (error) {
-      res.status(500).json({ message: "Server Error" });
+      res.status(500).json({ message: "Server Error from appliedjobs" });
   }
 };
 
@@ -103,7 +104,7 @@ const applyJob = async (req, res) => {
 
     if (!job) return res.status(404).json({ message: "Job not found" });
 
-    // ✅ Check if applicant already applied
+    // Check if applicant already applied
     if (job.applicants.includes(req.user.id)) {
       return res.status(400).json({ message: "You have already applied for this job" });
     }

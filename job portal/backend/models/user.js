@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ["admin", "recruiter", "applicant"], default: "applicant" },
 });
 
-// ✅ Hash password only if modified
+// Hash password only if modified
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 10);

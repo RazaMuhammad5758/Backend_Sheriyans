@@ -1,10 +1,10 @@
 <main>
     <h2>Post a New Job</h2>
 
-    <!-- ✅ Error Message Placeholder -->
+    <!-- Error Message Placeholder -->
     <p id="error-message" style="color: red; display: none;"></p>
 
-    <!-- ✅ Only Show Form for Recruiters -->
+    <!-- Only Show Form for Recruiters -->
     <div id="jobFormContainer" style="display: none;">
         <form id="postJobForm" method="POST" action="/api/jobs/post">
             <label>Job Title: <input type="text" id="title" required></label>
@@ -15,65 +15,29 @@
 </main>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const userRole = localStorage.getItem("userRole");
-    const errorMessage = document.getElementById("error-message");
-
-    // ✅ Check if user is a recruiter before showing the form
-    if (userRole === "recruiter") {
-        document.getElementById("jobFormContainer").style.display = "block";
-    } else {
-        errorMessage.textContent = "Access Denied! Only recruiters can post jobs.";
-        errorMessage.style.display = "block";
-    }
-});
-
-document.getElementById("postJobForm").addEventListener("submit", async function (event) {
-    event.preventDefault();
-
-    const title = document.getElementById("title").value.trim();
-    const description = document.getElementById("description").value.trim();
-    const token = localStorage.getItem("token");
-    const errorMessage = document.getElementById("error-message");
-
-    // ✅ Frontend Validation
-    if (!title || !description) {
-        errorMessage.textContent = "All fields are required!";
-        errorMessage.style.display = "block";
-        return;
-    }
-    if (description.length < 20) {
-        errorMessage.textContent = "Job description must be at least 20 characters!";
-        errorMessage.style.display = "block";
-        return;
-    }
-
-    try {
+    document.addEventListener("DOMContentLoaded", async function () {
+        const errorMessage = document.getElementById("error-message");
+        const jobFormContainer = document.getElementById("jobFormContainer");
         const token = localStorage.getItem("token");
-
-        const response = await fetch("/api/jobs/post", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}` // ✅ Token Sent
-        },
-        body: JSON.stringify({ title, description })
-        });
-
-
-        const data = await response.json();
-
-        if (response.ok) {
-            alert("Job posted successfully!");
-            window.location.href = "/jobs"; 
-        } else {
-            errorMessage.textContent = data.message || "Job posting failed!";
+    
+        try {
+            const response = await fetch("/api/user/profile", {
+                method: "GET",
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+    
+            const data = await response.json();
+    
+            if (data.role === "recruiter") {
+                jobFormContainer.style.display = "block";
+            } else {
+                errorMessage.textContent = "Access Denied! Only recruiters can post jobs.";
+                errorMessage.style.display = "block";
+            }
+        } catch (error) {
+            errorMessage.textContent = "Error fetching user role. Please log in again.";
             errorMessage.style.display = "block";
         }
-    } catch (error) {
-        console.error("Job Posting Error:", error);
-        errorMessage.textContent = "Server error. Please try again.";
-        errorMessage.style.display = "block";
-    }
-});
-</script>
+    });
+    </script>
+    

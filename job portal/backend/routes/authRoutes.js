@@ -15,6 +15,8 @@ const { createJob } = require("../controllers/jobController");
 
 const router = express.Router();
 
+
+
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.post("/postjob", authenticateUser, authorizeRecruiter, createJob); // ✅ FIXED
