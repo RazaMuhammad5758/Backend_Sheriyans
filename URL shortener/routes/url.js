@@ -1,11 +1,11 @@
-const express = require('express')
-const { handleGenerateNewShortURL, handleGetAnalytics, handleDeleteURL } = require('../controllers/url')
+const express = require('express');
+const { restrictToUserLoggedIn } = require('../middlewares/auth');
+const { handleGenerateNewShortURL, handleGetAnalytics, handleDeleteURL } = require('../controllers/url');
+
 const router = express.Router();
 
-router.post('/', handleGenerateNewShortURL)
+router.post('/', restrictToUserLoggedIn, handleGenerateNewShortURL);
+router.get('/analytics/:shortId', restrictToUserLoggedIn, handleGetAnalytics);
+router.get('/delete/:shortId', restrictToUserLoggedIn, handleDeleteURL);
 
-router.get('/analytics/:shortId', handleGetAnalytics)
-
-router.get('/delete/:shortId', handleDeleteURL);
-
-module.exports = router
+module.exports = router;

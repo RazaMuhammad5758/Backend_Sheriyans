@@ -3,23 +3,21 @@ const URL = require('../models/url')
 
 
 async function handleGenerateNewShortURL(req, res) {
-    const body = req.body
-    if(!body.url)  return res.status(400).json({error: "URL is required"})
-    
-    const shortID = shortid.generate().substring(0, 4);  // shortid ko sahi tareeqay se use karein
+    if (!req.user) return res.status(401).json({ error: "Unauthorized" });
+
+    const body = req.body;
+    if (!body.url) return res.status(400).json({ error: "URL is required" });
+
+    const shortID = shortid.generate().substring(0, 4);
     await URL.create({
         shortId: shortID,
         redirectUrl: body.url,
         visitedHistory: [],
-        createdBy: req.user._id,
-    })
+        createdBy: req.user._id,  // Ensure user is set
+    });
 
-    // Redirect to the same page after URL is generated, passing the generated ID
     return res.redirect(`/url?id=${shortID}`);
- // or res.redirect('/url?id=' + shortID);
 }
-
-
 
 async function handleGetAnalytics(req, res) {
     const shortId = req.params.shortId;
